@@ -1,0 +1,23 @@
+## Copyright (C) 2026 Alexandre Gomes Gaigalas
+## This file is part of GNU Mes.
+##
+## GNU Mes is free software; you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
+##
+## GNU Mes is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+# Reserved for future mes-mode aarch64 mnemonics. Currently empty
+# because the M2-Planet path uses macro mnemonics defined in
+# lib/m2/aarch64/aarch64_defs.M1; aarch64 has no mes-mode register
+# decomposition table analogous to riscv64.M1's RV-style triplets.
+# The build pipeline (scripts/mes.kaem) references this file
+# unconditionally as lib/${MES_CPU}-mes/${MES_CPU}.M1 — keeping it
+# present (even empty) avoids a missing-file kaem failure.

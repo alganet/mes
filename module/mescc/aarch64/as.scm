@@ -124,13 +124,14 @@
 
 ;;; label address into register (uses LOAD_W<R>_AHEAD + SKIP_32_DATA
 ;;; + &label, then sign-extension if needed). For x16 specifically
-;;; this matches the M2libc pattern; other registers need their own
-;;; LOAD_W<R>_AHEAD macros (currently only X0,X1,X2,X13,X14,X15,X16
-;;; are defined in M2libc/aarch64/aarch64_defs.M1).
+;;; this matches the M2libc pattern; LOAD_W<R>_AHEAD macros are
+;;; defined for X0,X1,X2,X9..X16 in lib/m2/aarch64/aarch64_defs.M1
+;;; -- which covers the x9..x14 IR temporaries declared in
+;;; aarch64:registers (info.scm).
 (define (aarch64:label_address r label)
   `((,(string-append "LOAD_W" (substring r 1) "_AHEAD"))
     ("SKIP_32_DATA")
-    ((#:absolute-address ,label))))
+    ((#:address ,label))))
 
 (define (aarch64:label->r info label)
   (let ((r (get-r info)))

@@ -51,80 +51,122 @@
 long
 __sys_call (long sys_call)
 {
-  asm ("SET_X0_FROM_BP" "SUB_X0_8" "DEREF_X0"
-       "SET_X8_FROM_X0"
-       "SYSCALL"
-       "SET_X16_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_8");
+  asm ("DEREF_X0");
+  asm ("SET_X8_FROM_X0");
+  asm ("SYSCALL");
+  asm ("SET_X16_FROM_X0");
 }
 
 long
 __sys_call1 (long sys_call, long one)
 {
-  asm ("SET_X0_FROM_BP" "SUB_X0_8" "DEREF_X0"
-       "SET_X8_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_16" "DEREF_X0"
-       "SYSCALL"
-       "SET_X16_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_8");
+  asm ("DEREF_X0");
+  asm ("SET_X8_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_16");
+  asm ("DEREF_X0");
+  asm ("SYSCALL");
+  asm ("SET_X16_FROM_X0");
 }
 
 long
 __sys_call2 (long sys_call, long one, long two)
 {
-  asm ("SET_X0_FROM_BP" "SUB_X0_8" "DEREF_X0"
-       "SET_X8_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_24" "DEREF_X0"
-       "SET_X1_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_16" "DEREF_X0"
-       "SYSCALL"
-       "SET_X16_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_8");
+  asm ("DEREF_X0");
+  asm ("SET_X8_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_24");
+  asm ("DEREF_X0");
+  asm ("SET_X1_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_16");
+  asm ("DEREF_X0");
+  asm ("SYSCALL");
+  asm ("SET_X16_FROM_X0");
 }
 
 long
 __sys_call3 (long sys_call, long one, long two, long three)
 {
-  asm ("SET_X0_FROM_BP" "SUB_X0_8" "DEREF_X0"
-       "SET_X8_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_32" "DEREF_X0"
-       "SET_X2_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_24" "DEREF_X0"
-       "SET_X1_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_16" "DEREF_X0"
-       "SYSCALL"
-       "SET_X16_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_8");
+  asm ("DEREF_X0");
+  asm ("SET_X8_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_32");
+  asm ("DEREF_X0");
+  asm ("SET_X2_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_24");
+  asm ("DEREF_X0");
+  asm ("SET_X1_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_16");
+  asm ("DEREF_X0");
+  asm ("SYSCALL");
+  asm ("SET_X16_FROM_X0");
 }
 
 long
 __sys_call4 (long sys_call, long one, long two, long three, long four)
 {
-  asm ("SET_X0_FROM_BP" "SUB_X0_8" "DEREF_X0"
-       "SET_X8_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_40" "DEREF_X0"
-       "SET_X3_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_32" "DEREF_X0"
-       "SET_X2_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_24" "DEREF_X0"
-       "SET_X1_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_16" "DEREF_X0"
-       "SYSCALL"
-       "SET_X16_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_8");
+  asm ("DEREF_X0");
+  asm ("SET_X8_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_40");
+  asm ("DEREF_X0");
+  asm ("SET_X3_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_32");
+  asm ("DEREF_X0");
+  asm ("SET_X2_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_24");
+  asm ("DEREF_X0");
+  asm ("SET_X1_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_16");
+  asm ("DEREF_X0");
+  asm ("SYSCALL");
+  asm ("SET_X16_FROM_X0");
 }
 
 long
 __sys_call5 (long sys_call, long one, long two, long three, long four, long five)
 {
-  asm ("SET_X0_FROM_BP" "SUB_X0_8" "DEREF_X0"
-       "SET_X8_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_48" "DEREF_X0"
-       "SET_X4_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_40" "DEREF_X0"
-       "SET_X3_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_32" "DEREF_X0"
-       "SET_X2_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_24" "DEREF_X0"
-       "SET_X1_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_16" "DEREF_X0"
-       "SYSCALL"
-       "SET_X16_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_8");
+  asm ("DEREF_X0");
+  asm ("SET_X8_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_48");
+  asm ("DEREF_X0");
+  asm ("SET_X4_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_40");
+  asm ("DEREF_X0");
+  asm ("SET_X3_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_32");
+  asm ("DEREF_X0");
+  asm ("SET_X2_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_24");
+  asm ("DEREF_X0");
+  asm ("SET_X1_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_16");
+  asm ("DEREF_X0");
+  asm ("SYSCALL");
+  asm ("SET_X16_FROM_X0");
 }
 
 long

@@ -44,7 +44,7 @@ typedef struct
   long __sp;
 } __jmp_buf;
 #endif
-#elif __riscv && (__GNUC__ || __TINYC__)
+#elif __riscv && __riscv_xlen==64 && (__GNUC__ || __TINYC__)
 typedef struct
 {
   long __sp;

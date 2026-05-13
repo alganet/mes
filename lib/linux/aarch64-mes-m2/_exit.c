@@ -31,8 +31,10 @@ _exit (int status)
    * SVC #0. The SET_X0_FROM_BP / SUB_X0_8 / DEREF_X0 idiom is
    * the M2libc/aarch64 convention for "load arg N from stack
    * frame slot fp-(N*8)". */
-  asm ("SET_X0_FROM_BP" "SUB_X0_8" "DEREF_X0"
-       "SET_X8_TO_SYS_EXIT"
-       "SYSCALL");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_8");
+  asm ("DEREF_X0");
+  asm ("SET_X8_TO_SYS_EXIT");
+  asm ("SYSCALL");
   // no need to read return value
 }

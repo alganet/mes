@@ -35,11 +35,17 @@ _write (int filedes, void const *buffer, size_t size)
    *   arg2 (buffer)  fp-16 -> x1
    *   arg1 (filedes) fp-8  -> x0
    */
-  asm ("SET_X0_FROM_BP" "SUB_X0_24" "DEREF_X0"
-       "SET_X2_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_16" "DEREF_X0"
-       "SET_X1_FROM_X0"
-       "SET_X0_FROM_BP" "SUB_X0_8" "DEREF_X0"
-       "SET_X8_TO_SYS_WRITE"
-       "SYSCALL");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_24");
+  asm ("DEREF_X0");
+  asm ("SET_X2_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_16");
+  asm ("DEREF_X0");
+  asm ("SET_X1_FROM_X0");
+  asm ("SET_X0_FROM_BP");
+  asm ("SUB_X0_8");
+  asm ("DEREF_X0");
+  asm ("SET_X8_TO_SYS_WRITE");
+  asm ("SYSCALL");
 }

@@ -14,6 +14,15 @@
 ##
 ## You should have received a copy of the GNU General Public License
 ## along with M2-Planet.  If not, see <http://www.gnu.org/licenses/>.
+##
+## NOTE: This file is the *standalone* aarch64 macro set used by mes's
+## in-image M1 invocation (see scripts/mes.kaem), which does NOT
+## additionally `-f` upstream M2libc/aarch64/aarch64_defs.M1. Some
+## macros (PUSH_X0, PUSH_X1, X13-X16, LOAD_W0..W2, LOAD_W13..W16,
+## INIT_SP) mirror upstream by necessity; the X9-X12, BR_*, SKIP_*,
+## SET_X8_*, SUB_X0_* entries are mes-specific additions to support the
+## syscall, comparison, and frame-pointer encodings emitted by
+## lib/linux/aarch64-mes-m2/*.c.
 
 DEFINE NULL 0000000000000000
 
@@ -70,7 +79,11 @@ DEFINE SKIP_INST_HI 48000054
 DEFINE SKIP_32_DATA 02000014
 
 
-# Load literals (PC-relative)
+# Load literals (PC-relative). Inherited from upstream M2libc: W0 uses
+# LDRSW (`98`, sign-extend 32->64) while W1..W16 use LDR (`18`, zero-
+# extend). For addresses >= 2^31 placed into x0 via this macro, the
+# sign-extension would yield a negative 64-bit value. Currently the
+# build's --base-address sits well below 2^31 so the asymmetry is dormant.
 DEFINE LOAD_W0_AHEAD 40000098
 DEFINE LOAD_W1_AHEAD 41000018
 DEFINE LOAD_W2_AHEAD 42000018

@@ -20,42 +20,13 @@
 ;;; along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-
-;;; ====================================================================
-;;; aarch64 backend for mescc -- INITIAL SCAFFOLD, not yet functional.
-;;; ====================================================================
 ;;;
-;;; This module declares the aarch64 instructions alist that mescc's
-;;; code generator will consult for IR -> machine-code emission. The
-;;; M2-Planet path (see lib/linux/aarch64-mes-m2/) is the production
-;;; route for building mes-on-aarch64 today; this file exists for
-;;; future mescc-native (Scheme-driven) compilation.
-;;;
-;;; Status: Module structure + simplest helpers (push/pop, frame
-;;; setup, ret, label addressing) are translated to aarch64
-;;; conventions. More complex helpers (arithmetic, comparisons,
-;;; type conversions, byte/word mem ops) emit RV64-style mnemonics
-;;; as placeholders -- they will need re-translation to aarch64
-;;; M2libc macros (SET_X0_FROM_BP etc.) before this backend can
-;;; produce running aarch64 binaries.
-;;;
-;;; Translation plan for outstanding ops:
-;;;   1. lib/aarch64-mes/aarch64.M1 currently a stub. To support the
-;;;      generic patterns this file emits, it needs PUSH_X9..PUSH_X14,
-;;;      POP_X9..POP_X14, and parameterized arithmetic macros.
-;;;   2. Each helper below that mentions "RV64 placeholder" needs to
-;;;      be rewritten to use M2libc/aarch64 macros (the same vocabulary
-;;;      M2-Planet's aarch64 backend in cc_emit.c emits).
-;;;   3. Validation: mes's `make check` test suite under
-;;;      ARCH=aarch64; passing is the gate.
-;;;
-;;; Why this stub exists despite being incomplete:
-;;;   The user (alganet) explicitly chose to include the mescc native
-;;;   backend in the aarch64 mes port for upstream-PR completeness,
-;;;   even though abuild's bootstrap chain uses only the M2-Planet
-;;;   path. This file establishes the module name and exports so that
-;;;   downstream code referencing (mescc aarch64 as) doesn't fail at
-;;;   import time; the actual code-emission logic is a follow-up.
+;;; INCOMPLETE: aarch64 backend scaffold for mescc. The production aarch64
+;;; mes build uses the M2-Planet path in lib/linux/aarch64-mes-m2/; this
+;;; module exists so `(mescc aarch64 as)` resolves on import. The AARCH64_TODO_*
+;;; sentinels below mark code-emission helpers that still need to be
+;;; rewritten from their riscv64-derived placeholders into proper
+;;; aarch64 M2libc macros.
 
 ;;; Code:
 
@@ -67,17 +38,6 @@
   #:export (
             aarch64:instructions
             ))
-
-;;; Reserved temporary intermediate registers.
-;;; aarch64 ABI: x9..x15 are caller-saved scratch; mescc uses
-;;; x9..x14 as IR temporaries (see info.scm), x15 reserved here for
-;;; mescc-internal scratch in code emission.
-(define %tmpreg1 "x15")
-(define %tmpreg2 "x16")              ; intra-procedure-call scratch
-
-;;; Registers for return values and condition flag emulation.
-(define %retreg "x9")
-(define %zero "xzr")
 
 ;;; ----------------------------------------------------------------
 ;;; Translated helpers (functional)
@@ -163,7 +123,7 @@
   `(("AARCH64_TODO_r0_plus_r1")))
 
 (define (aarch64:r0-r1 info)
-  `(("ADD_X0_X1_X0_TODO_aarch64_r0_minus_r1")))
+  `(("AARCH64_TODO_r0_minus_r1")))
 
 (define (aarch64:r0+value info v)
   `(("AARCH64_TODO_r0_plus_value")))

@@ -255,10 +255,8 @@ DEFINE SYSCALL 010000d4
 
 
 # Mes extensions (beyond upstream M2libc/aarch64/aarch64_defs.M1)
-# These three macros are added so syscall.c can encode the
-# syscall-number-into-x8 pattern and the larger frame-pointer
-# offsets needed by 5/6-arg syscall wrappers.
+# Added so syscall.c can encode the syscall-number-into-x8 pattern and
+# the frame-pointer offset needed by the 5-arg syscall wrapper.
 
 DEFINE SET_X8_FROM_X0 e80300aa  # mov x8, x0
 DEFINE SUB_X0_48 00c000d1       # sub x0, x0, #0x30
-DEFINE SUB_X0_56 00e000d1       # sub x0, x0, #0x38

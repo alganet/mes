@@ -31,7 +31,7 @@ struct foo
   int b;
   int c;
   unsigned char *d;
-#if __MESC__ && (__x86_64__ || __riscv_xlen == 64)
+#if __MESC__ && (__x86_64__ || __riscv_xlen == 64 || __aarch64__)
   int __align;
 #endif
 };
@@ -61,7 +61,7 @@ main ()
 #if __i386__ || __arm__ || __riscv_xlen == 32
   int foo_size_14 = 224;
   int foo_size_18 = 288;
-#elif __x86_64__ || __riscv_xlen == 64
+#elif __x86_64__ || __riscv_xlen == 64 || __aarch64__
   int foo_size_14 = 336;
   int foo_size_18 = 432;
 #endif

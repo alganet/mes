@@ -26,8 +26,20 @@
 trap 'test -f .log && cat .log' EXIT
 
 mkdir -p $mes_cpu-mes
-cp ${srcdest}lib/$mes_kernel/$mes_cpu-mes-$compiler/crt1.c .
-compile crt1.c
+crt1_src=${srcdest}lib/$mes_kernel/$mes_cpu-mes-$compiler
+if test -e $crt1_src/crt1.M1; then
+    # aarch64: _start must INIT_SP before mescc's unconditional function
+    # preamble stores through the (uninitialised) x18 software SP, so it
+    # is hand-written assembly assembled directly rather than a crt1.c.
+    cp $crt1_src/crt1.M1 .
+    trace "M1         crt1.M1" $M1 --little-endian --architecture $mes_cpu -f ${srcdest}lib/$mes_cpu-mes/$mes_cpu.M1 -f crt1.M1 -o crt1.o
+    # crt1.M1 is itself the assembly text; the linker's blood-elf debug
+    # pass expects a crt1.s, so provide it (the crt1.c path emits one).
+    cp crt1.M1 crt1.s
+else
+    cp $crt1_src/crt1.c .
+    compile crt1.c
+fi
 cp crt1.o $mes_cpu-mes
 if test -e crt1.s; then
     cp crt1.s $mes_cpu-mes

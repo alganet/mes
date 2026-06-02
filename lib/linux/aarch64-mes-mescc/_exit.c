@@ -1,7 +1,9 @@
 /* -*-comment-start: "//";comment-end:""-*-
  * GNU Mes --- Maxwell Equations of Software
- * Copyright © 2018,2025 Janneke Nieuwenhuizen <janneke@gnu.org>
+ * Copyright © 2018,2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
  * Copyright © 2021 W. J. van der Laan <laanwj@protonmail.com>
+ * Copyright © 2023 Andrius Štikonas <andrius@stikonas.eu>
+ * Copyright © 2026 Alexandre Gomes Gaigalas (aarch64 port)
  *
  * This file is part of GNU Mes.
  *
@@ -19,52 +21,17 @@
  * along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <mes/lib.h>
+#include "mes/lib-mini.h"
+#include "linux/aarch64/syscall.h"
 
-struct foo
+void
+_exit (int status)
 {
-  int length;
-  char buf[16];
-};
-
-struct bar
-{
-  struct
-  {
-    int x;
-    int y;
-    int z;
-  };
-};
-
-#if __i386__ || __arm__ || __riscv_xlen == 32
-#define ptr_size 4
-#define foo_size 20
-#define bar_size 12
-#elif __x86_64__ || __riscv_xlen == 64 || __aarch64__
-#define ptr_size 8
-#define foo_size 24
-#define bar_size 12
-#endif
-
-
-int
-main ()
-{
-  char **p;
-  if (sizeof (*p) != ptr_size)
-    return 1;
-  if (sizeof (**p) != 1)
-    return 2;
-  oputs ("size: ");
-  oputs (itoa (sizeof (struct foo)));
-  oputs ("\n");
-  if (sizeof (struct foo) != 20)
-    return 3;
-  struct foo f;
-  if (sizeof f != 20)
-    return 4;
-  if (sizeof (struct bar) != 12)
-    return 5;
-  return 0;
+  /* status is the first arg, at [BP+16]; load it into x0 for SVC. */
+  asm ("SET_X0_FROM_BP");
+  asm ("ADD_X0_16");
+  asm ("DEREF_X0");
+  asm ("SET_X8_TO_SYS_EXIT");
+  asm ("SYSCALL");
+  // no need to read return value
 }

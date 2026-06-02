@@ -230,3 +230,19 @@ DEFINE LOAD_X15_AHEAD 4f000058  # ldr x15, 8 (condregy literal loads)
 DEFINE LOAD_X16_AHEAD 50000058  # ldr x16, 8 (scratch / frame-size / arg-addr loads)
 DEFINE SKIP_64_DATA 03000014    # b .+12 (skip the 8-byte literal)
 DEFINE nop d503201f             # inline asm ("nop") token (cf. 08-assign.c)
+
+# --- mescc libc / crt1 additions ---
+# Positive add-immediates to x0, the deref scratch.  The libc syscall
+# wrappers read positional args at [BP+16], [BP+24], ... (mescc places
+# arg N above the frame, like riscv64; cf. lib/linux/*-mes-mescc); the
+# idiom is SET_X0_FROM_BP / ADD_X0_<off> / DEREF_X0.
+DEFINE ADD_X0_8 00200091        # add x0, x0, #8
+DEFINE ADD_X0_16 00400091       # add x0, x0, #16
+DEFINE ADD_X0_24 00600091       # add x0, x0, #24
+DEFINE ADD_X0_32 00800091       # add x0, x0, #32
+DEFINE ADD_X0_40 00a00091       # add x0, x0, #40
+DEFINE ADD_X0_48 00c00091       # add x0, x0, #48
+DEFINE ADD_X0_56 00e00091       # add x0, x0, #56
+DEFINE SET_X9_FROM_X0 e90300aa  # mov x9, x0  (syscall return -> mescc r0)
+DEFINE SET_SP_FROM_X0 f20300aa  # mov x18, x0 (longjmp: restore SP)
+DEFINE SET_BP_FROM_X0 f10300aa  # mov x17, x0 (longjmp: restore BP)

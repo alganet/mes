@@ -50,9 +50,9 @@ main ()
 {
 #if __i386__ || __arm__ || __riscv_xlen == 32
   int sym_size = 8;
-#elif __GNUC__ && (__x86_64__ || __riscv_xlen == 64)
+#elif __GNUC__ && (__x86_64__ || __riscv_xlen == 64 || __aarch64__)
   int sym_size = 16;
-#elif  __MESC__ && (__x86_64__ || __riscv_xlen == 64)
+#elif  __MESC__ && (__x86_64__ || __riscv_xlen == 64 || __aarch64__)
   int sym_size = 12;
 #endif
 

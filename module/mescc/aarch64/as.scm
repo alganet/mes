@@ -308,11 +308,13 @@
 
 (define (aarch64:r0/r1 info signed?)
   (let ((r0 (get-r0 info)) (r1 (get-r1 info)))
-    (aarch64:insn (aarch64:enc-sdiv r0 r0 r1))))
+    (aarch64:insn ((if signed? aarch64:enc-sdiv aarch64:enc-udiv) r0 r0 r1))))
 
+;;; r0 := r0 - (r0 / r1) * r1, with the quotient signed or unsigned to
+;;; match the operand type (msub itself is sign-agnostic)
 (define (aarch64:r0%r1 info signed?)
   (let ((r0 (get-r0 info)) (r1 (get-r1 info)))
-    (list (aarch64:w->line (aarch64:enc-sdiv %scratch r0 r1))
+    (list (aarch64:w->line ((if signed? aarch64:enc-sdiv aarch64:enc-udiv) %scratch r0 r1))
           (aarch64:w->line (aarch64:enc-msub r0 %scratch r1 r0)))))
 
 (define (aarch64:r0<<r1 info)

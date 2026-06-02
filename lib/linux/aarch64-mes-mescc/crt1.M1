@@ -22,8 +22,17 @@
 ;; hands control with the *hardware* sp set up and x18 undefined. So we
 ;; must INIT_SP (x18 = sp) before main's compiled preamble does any
 ;; PUSH (which stores through x18). A mescc-compiled C _start cannot do
-;; this -- its preamble runs before the first statement -- hence this is
-;; hand-written.
+;; this -- mescc emits the function preamble (PUSH_LR/PUSH_BP, which
+;; store through x18) unconditionally, before the first statement -- so
+;; unlike the other targets, aarch64 ships hand-written startup assembly
+;; instead of a crt1.c.
+;;
+;; BUILD NOTE: build-aux/build-lib.sh compiles crt1.c into crt1.o for
+;; every other target.  For aarch64 it must instead assemble THIS file:
+;;   M1 --little-endian --architecture aarch64 \
+;;      -f lib/aarch64-mes/aarch64.M1 -f crt1.M1 -o crt1.o
+;; That wiring lands with the configure --host=aarch64 / libc step; until
+;; then this file is consumed only by the local mescc test harness.
 ;;
 ;; main() here takes no positional args; mescc leaves its return value
 ;; in r0 = x9 (the first IR register), which we move to x0 for exit().

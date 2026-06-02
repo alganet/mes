@@ -287,6 +287,11 @@ lib/tests/signal/90-signal.c
 lib/tests/scaffold/17-compare-rotated.c
 "
     fi
+
+    if test $mes_cpu = aarch64; then
+        xfail_tests="$xfail_tests
+"
+    fi
 fi
 
 if test $mes_cpu = x86_64; then

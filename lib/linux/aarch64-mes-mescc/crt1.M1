@@ -1,0 +1,40 @@
+## GNU Mes --- Maxwell Equations of Software
+## Copyright © 2026 Alexandre Gomes Gaigalas (aarch64 mescc port)
+##
+## This file is part of GNU Mes.
+##
+## GNU Mes is free software; you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 3 of the License, or (at
+## your option) any later version.
+##
+## GNU Mes is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+;; Minimal aarch64 mescc entry trampoline (first-green-test scaffold).
+;;
+;; mescc uses x18 as its software stack pointer, but the Linux kernel
+;; hands control with the *hardware* sp set up and x18 undefined. So we
+;; must INIT_SP (x18 = sp) before main's compiled preamble does any
+;; PUSH (which stores through x18). A mescc-compiled C _start cannot do
+;; this -- its preamble runs before the first statement -- hence this is
+;; hand-written.
+;;
+;; main() here takes no positional args; mescc leaves its return value
+;; in r0 = x9 (the first IR register), which we move to x0 for exit().
+;; argc/argv push + __init_io are added once libc lands.
+
+:_start
+	INIT_SP
+	LOAD_W16_AHEAD
+	SKIP_32_DATA
+	&main
+	BLR_X16
+	SET_X0_FROM_X9
+	SET_X8_TO_SYS_EXIT
+	SYSCALL

@@ -23,11 +23,22 @@
 ;;; Initialize MesCC as aarch64 compiler.
 ;;;
 ;;; Type sizes match riscv64 (asm-generic 64-bit Linux ABI: same
-;;; sizeof(long), sizeof(int), etc.). Register set differs: aarch64
-;;; uses x9..x14 as caller-saved scratch, with x15 reserved for
-;;; mescc's own intermediate state. x16/x17 are reserved by the
-;;; ABI for intra-procedure-call (linker veneers); x18..x28 are
-;;; callee-saved. x29 is the frame pointer, x30 the link register.
+;;; sizeof(long), sizeof(int), etc.). Registers follow M2libc's
+;;; convention, not the standard AArch64 ABI. The mescc backend
+;;; partitions the M2libc temporaries like riscv64 partitions t0..t6:
+;;;   x9..x13  caller-saved IR temporaries (aarch64:registers below);
+;;;            x9 is also the return register (mescc r0 / %retreg).
+;;;   x14 x15  condition-flag emulation registers (condregx/condregy in
+;;;            module/mescc/aarch64/as.scm) -- they must survive between
+;;;            a compare op and the jump/setcc that consumes it, so the
+;;;            backend never uses them as transient scratch.
+;;;   x16      transient scratch (literal-pool temp, computed addresses,
+;;;            the call/jump trampoline target; used by crt1 too).
+;;;   x17      base pointer (BP); x18 the stack pointer (SP) -- cf.
+;;;            INIT_SP (mov x18, sp) and SET_SP_FROM_BP (mov x18, x17) in
+;;;            lib/m2/aarch64/aarch64_defs.M1.
+;;; x30 is the link register; x29 (the ABI frame pointer) is unused --
+;;; BP=x17 takes its place.
 
 ;;; Code:
 
@@ -40,9 +51,10 @@
 (define (aarch64-info)
   (make <info> #:types aarch64:type-alist #:registers aarch64:registers #:instructions aarch64:instructions))
 
-;;; Caller-saved general-purpose registers usable for IR temporaries.
-;;; x9..x14 (6 registers); x15 is reserved for mescc internal use.
-(define aarch64:registers '("x9" "x10" "x11" "x12" "x13" "x14"))
+;;; Caller-saved general-purpose registers usable for IR temporaries
+;;; (x9..x13, 5 registers -- same count as riscv64 t0..t4). x14/x15 are
+;;; the flag-emulation registers and x16 the scratch; see commentary.
+(define aarch64:registers '("x9" "x10" "x11" "x12" "x13"))
 
 (define aarch64:type-alist
   `(("char" . ,(make-type 'signed 1 #f))

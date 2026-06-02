@@ -33,6 +33,10 @@ case "$mes_cpu" in
         cc_cpu=riscv64
         stage0_cpu=riscv64
         ;;
+    aarch64)
+        cc_cpu=aarch64
+        stage0_cpu=aarch64
+        ;;
     *)
         stage0_cpu=$mes_cpu
         cc_cpu=$mes_cpu

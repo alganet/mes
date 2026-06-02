@@ -170,7 +170,14 @@
 ;;; the 8 little-endian byte tokens of a 64-bit value, as M1 quoted-hex
 ;;; data.  The 64-bit mask gives two's-complement for negatives.
 (define (aarch64:le64-bytes v)
-  (let ((u (logand v #xffffffffffffffff)))
+  ;; mescc has no float backend; a floating C constant (e.g. ceil.c's
+  ;; `number + 0.9999`) can still reach an integer immediate load.  Like
+  ;; riscv64 we treat it as best-effort integer rather than crashing the
+  ;; compiler in logand below -- truncate toward zero to an exact int.
+  (let* ((v (if (and (number? v) (not (exact-integer? v)))
+                (inexact->exact (truncate v))
+                v))
+         (u (logand v #xffffffffffffffff)))
     (map (lambda (sh)
            (let ((b (logand (ash u sh) #xff)))
              (string-append "'" (if (< b 16) "0" "") (number->string b 16) "'")))

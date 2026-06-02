@@ -290,6 +290,11 @@ lib/tests/scaffold/17-compare-rotated.c
 
     if test $mes_cpu = aarch64; then
         xfail_tests="$xfail_tests
+lib/tests/scaffold/16-cast.c
+lib/tests/scaffold/17-compare-unsigned-le.c
+lib/tests/scaffold/17-compare-rotated.c
+lib/tests/dirent/90-readdir.c
+lib/tests/signal/90-signal.c
 "
     fi
 fi

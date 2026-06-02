@@ -64,7 +64,7 @@ typedef long long int64_t;
 #if __i386__ || __arm__ || __riscv_xlen == 32
 typedef int intmax_t;
 typedef unsigned uintmax_t;
-#elif __x86_64__ || __riscv_xlen == 64
+#elif __x86_64__ || __riscv_xlen == 64 || __aarch64__
 typedef long intmax_t;
 typedef unsigned long uintmax_t;
 #endif
@@ -111,7 +111,7 @@ typedef unsigned long uintmax_t;
 #define LLONG_MIN INT64_MIN
 #define LLONG_MAX INT64_MAX
 #define SIZE_MAX UINT32_MAX
-#elif __x86_64__ || __riscv_xlen == 64
+#elif __x86_64__ || __riscv_xlen == 64 || __aarch64__
 #define LONG_MIN INT64_MIN
 #define LONG_MAX INT64_MAX
 #define UINT_MAX UINT32_MAX

@@ -1,0 +1,59 @@
+### GNU Mes --- Maxwell Equations of Software
+### Copyright © 2017,2018,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+### Copyright © 2021 W. J. van der Laan <laanwj@protonmail.com>
+### Copyright © 2026 Alexandre Gomes Gaigalas (aarch64 port)
+###
+### This file is part of GNU Mes.
+###
+### GNU Mes is free software; you can redistribute it and/or modify it
+### under the terms of the GNU General Public License as published by
+### the Free Software Foundation; either version 3 of the License, or (at
+### your option) any later version.
+###
+### GNU Mes is distributed in the hope that it will be useful, but
+### WITHOUT ANY WARRANTY; without even the implied warranty of
+### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+### GNU General Public License for more details.
+###
+### You should have received a copy of the GNU General Public License
+### along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+### Commentary:
+
+# elf64-body-exit-42.hex2: `exit 42' for aarch64-linux written in hex2
+# assembly, for usage with generic elf64-header.hex2 and
+# elf64-footer-single-main.hex2.
+
+# This ELF binary contains a symbol table, which means that objdump and
+# gdb can be used to inspect and debug.
+
+# _start loads the absolute address of `main' from the 4-byte literal
+# that follows the branch (zero-extended via `ldr w16') and jumps to it,
+# mirroring the riscv64 auipc+lwu+jalr idiom with aarch64 adr+ldr+br.
+
+### Code:
+
+# @300
+:ELF_text
+:_start
+                     # call main
+70 00 00 10          # adr x16, #12  (pc + 12 -> &main literal)
+10 02 40 b9          # ldr w16, [x16]
+00 02 1f d6          # br  x16
+&main                # 4-byte absolute address of main
+
+# @310
+:main
+                     # exit (42)
+a8 0b 80 d2          # mov x8, #93   (SYS_exit)
+40 05 80 d2          # mov x0, #42
+01 00 00 d4          # svc #0
+00 00 20 d4          # brk #0        (not reached)
+
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00     # align to @330
+
+# @330
+:ELF_data
+65 78 69 74 34 32 20 64 61 74 61 20 68 65 72 65 # exit42 data here
+00

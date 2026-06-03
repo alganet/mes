@@ -20,10 +20,21 @@
 
 #ifndef __raise
 
+#include <signal.h>
+#include <unistd.h>
+
+/* Deliver the signal for real (cf. lib/posix/raise.c's raise()).  abort()
+ * calls __raise(SIGABRT) and, if it returns < 0, deliberately crashes via a
+ * NULL dereference ("fail in any way possible", see src/posix.c).  Returning
+ * -1 unconditionally meant every abort() -- e.g. an unhandled Scheme
+ * exception's (abort) -- died with SIGSEGV instead of SIGABRT, masking the
+ * already-printed error message behind a segfault.  kill()/getpid() are real
+ * in the mes libc; builds without syscalls use the __raise(x) -1 macro in
+ * include/mes/lib-cc.h instead of this function. */
 int
 __raise (int signum)
 {
-  return -1;
+  return kill (getpid (), signum);
 }
 
 #endif

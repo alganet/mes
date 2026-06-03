@@ -151,14 +151,17 @@
 ;;; cmp xn, xm           (subs xzr,xn,xm)   cf. CMP_X1_X0 = 3f0000eb
 (define (aarch64:enc-cmp rn rm)
   (logior #xeb00001f (ash (aarch64:rn rm) 16) (ash (aarch64:rn rn) 5)))
-;;; cset xd, cond        (csinc xd,xzr,xzr,!cond); base verified by the
-;;; 12-* / 17-* compare tests.  invert(cond) = cond xor 1 for the
+;;; cset xd, cc          (csinc xd,xzr,xzr,!cc); base verified by the
+;;; 12-* / 17-* compare tests.  invert(cc) = cc xor 1 for the
 ;;; standard condition pairs (eq/ne, ge/lt, hi/ls, hs/lo, gt/le).
-(define (aarch64:enc-cset rd cond)
-  (logior #x9a9f07e0 (ash (logxor cond 1) 12) (aarch64:rn rd)))
+;;; NB: the condition arg is named `cc`, not `cond` -- a parameter named
+;;; `cond` shadows the cond macro and crashes the mes interpreter when
+;;; mescc is self-hosted (the other backends avoid it too).
+(define (aarch64:enc-cset rd cc)
+  (logior #x9a9f07e0 (ash (logxor cc 1) 12) (aarch64:rn rd)))
 ;;; b.cond #(ahead instructions)            cf. SKIP_INST_NE = 41000054 (ahead=2)
-(define (aarch64:enc-bcond cond ahead)
-  (logior #x54000000 (ash (logand ahead #x7ffff) 5) cond))
+(define (aarch64:enc-bcond cc ahead)
+  (logior #x54000000 (ash (logand ahead #x7ffff) 5) cc))
 ;;; blr xn / br xn                          cf. BLR_X16 = 00023fd6, BR_X16 = 00021fd6
 (define (aarch64:enc-blr rn) (logior #xd63f0000 (ash (aarch64:rn rn) 5)))
 (define (aarch64:enc-br rn)  (logior #xd61f0000 (ash (aarch64:rn rn) 5)))
@@ -174,9 +177,13 @@
   ;; `number + 0.9999`) can still reach an integer immediate load.  Like
   ;; riscv64 we treat it as best-effort integer rather than crashing the
   ;; compiler in logand below -- truncate toward zero to an exact int.
-  (let* ((v (if (and (number? v) (not (exact-integer? v)))
-                (inexact->exact (truncate v))
-                v))
+  ;; NB: guard on `integer?` (bound in both guile and the self-hosted mes)
+  ;; and keep `truncate`/`inexact->exact` in the else branch only -- mes
+  ;; lacks `exact-integer?` and `truncate`, but it has no floats either,
+  ;; so under mes v is always an integer and the else branch never runs.
+  (let* ((v (if (integer? v)
+                v
+                (inexact->exact (truncate v))))
          (u (logand v #xffffffffffffffff)))
     (map (lambda (sh)
            (let ((b (logand (ash u sh) #xff)))
@@ -574,8 +581,8 @@
 
 ;;; jump to label when <cond> holds: skip the 4-instruction trampoline
 ;;; on the inverse condition (b.!cond +5), else fall through and branch.
-(define (aarch64:cond-jump cond label)
-  (cons (aarch64:w->line (aarch64:enc-bcond (logxor cond 1) 5))
+(define (aarch64:cond-jump cc label)
+  (cons (aarch64:w->line (aarch64:enc-bcond (logxor cc 1) 5))
         (aarch64:trampoline label "BR_X16")))
 
 ;;; ----------------------------------------------------------------
@@ -627,11 +634,11 @@
 (define (aarch64:jump-byte-z info label)
   (aarch64:jump-z info label))
 
-;;; set register from a condition (cmp condregx,condregy; cset r,cond)
-(define (aarch64:cc->r info cond)
+;;; set register from a condition (cmp condregx,condregy; cset r,cc)
+(define (aarch64:cc->r info cc)
   (let ((r (get-r info)))
     (list (aarch64:w->line (aarch64:enc-cmp %condregx %condregy))
-          (aarch64:w->line (aarch64:enc-cset r cond)))))
+          (aarch64:w->line (aarch64:enc-cset r cc)))))
 
 (define (aarch64:zf->r info)     (aarch64:cc->r info cc-eq))
 (define (aarch64:r-negate info)  (aarch64:cc->r info cc-eq))

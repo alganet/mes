@@ -20,6 +20,20 @@
 
 #ifndef __raise
 
+#if __M2__
+
+/* The M2-Planet bootstrap build compiles this file without kill()/getpid()
+ * in its translation unit, so reference them here would abort the build
+ * ("kill is not a defined symbol").  Keep the historical stub for M2; the
+ * seed interpreter does not rely on real signal delivery. */
+int
+__raise (int signum)
+{
+  return -1;
+}
+
+#else
+
 #include <signal.h>
 #include <unistd.h>
 
@@ -29,12 +43,14 @@
  * -1 unconditionally meant every abort() -- e.g. an unhandled Scheme
  * exception's (abort) -- died with SIGSEGV instead of SIGABRT, masking the
  * already-printed error message behind a segfault.  kill()/getpid() are real
- * in the mes libc; builds without syscalls use the __raise(x) -1 macro in
- * include/mes/lib-cc.h instead of this function. */
+ * in the mescc/gcc mes libc; builds without syscalls use the __raise(x) -1
+ * macro in include/mes/lib-cc.h instead of this function. */
 int
 __raise (int signum)
 {
   return kill (getpid (), signum);
 }
+
+#endif
 
 #endif

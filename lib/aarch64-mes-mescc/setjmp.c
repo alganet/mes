@@ -33,23 +33,23 @@ longjmp (jmp_buf env, int val)
      return value in x9 (mescc r0 / %retreg) so setjmp appears to return
      val, then restore BP and SP and branch to the saved __pc.  x9 is
      loaded first and never touched again, so it survives to the jump. */
-  asm ("SET_X0_FROM_BP");       // x9 = val
+  asm ("SET_X0_FROM_BP");       // x0 = BP (scratch)
   asm ("ADD_X0_24");
   asm ("DEREF_X0");
-  asm ("SET_X9_FROM_X0");
-  asm ("SET_X0_FROM_BP");       // BP = env
+  asm ("SET_X9_FROM_X0");       // x9 = val (mescc r0 / %retreg)
+  asm ("SET_X0_FROM_BP");       // x0 = BP (scratch for loading env)
   asm ("ADD_X0_16");
   asm ("DEREF_X0");
   asm ("SET_BP_FROM_X0");
-  asm ("SET_X0_FROM_BP");       // x16 = env.__pc
+  asm ("SET_X0_FROM_BP");       // x0 = env (scratch)
   asm ("ADD_X0_8");
   asm ("DEREF_X0");
-  asm ("SET_X16_FROM_X0");
-  asm ("SET_X0_FROM_BP");       // SP = env.__sp
+  asm ("SET_X16_FROM_X0");      // x16 = env.__pc (jump target)
+  asm ("SET_X0_FROM_BP");       // x0 = env (scratch for loading __sp)
   asm ("ADD_X0_16");
   asm ("DEREF_X0");
-  asm ("SET_SP_FROM_X0");
-  asm ("SET_X0_FROM_BP");       // BP = env.__bp
+  asm ("SET_SP_FROM_X0");       // SP = env.__sp
+  asm ("SET_X0_FROM_BP");       // x0 = env (scratch for loading __bp)
   asm ("DEREF_X0");
   asm ("SET_BP_FROM_X0");
   asm ("BR_X16");

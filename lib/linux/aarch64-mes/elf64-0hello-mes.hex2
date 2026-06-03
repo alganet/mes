@@ -1,0 +1,50 @@
+### GNU Mes --- Maxwell Equations of Software
+### Copyright © 2017,2018,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+### Copyright © 2026 Alexandre Gomes Gaigalas (aarch64 port)
+###
+### This file is part of GNU Mes.
+###
+### GNU Mes is free software; you can redistribute it and/or modify it
+### under the terms of the GNU General Public License as published by
+### the Free Software Foundation; either version 3 of the License, or (at
+### your option) any later version.
+###
+### GNU Mes is distributed in the hope that it will be useful, but
+### WITHOUT ANY WARRANTY; without even the implied warranty of
+### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+### GNU General Public License for more details.
+###
+### You should have received a copy of the GNU General Public License
+### along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+### Commentary:
+
+# elf64-0hello-mes.hex2: `Hello, GNU Mes!' for aarch64-linux written in
+# hex2 assembly, for usage with elf64-0header.hex2.  Inspiration was
+# taken from GNU Gcc output of hello-mes.S.
+
+# aarch64 Linux syscall ABI: x8 = syscall number, x0..x5 = args,
+# `svc #0', result in x0.  SYS_write = 64, SYS_exit = 93.  The buffer
+# address is taken PC-relative with `adr x1, hello'.
+
+### Code:
+
+# @80
+:ELF_text
+                     # write (1, hello, 16)
+08 08 80 d2          # mov x8, #64   (SYS_write)
+20 00 80 d2          # mov x0, #1    (stdout)
+e1 00 00 10          # adr x1, hello (pc + 0x1c)
+02 02 80 d2          # mov x2, #16
+01 00 00 d4          # svc #0
+                     # exit (0)
+a8 0b 80 d2          # mov x8, #93   (SYS_exit)
+00 00 80 d2          # mov x0, #0
+01 00 00 d4          # svc #0
+00 00 20 d4          # brk #0        (not reached)
+
+# @a4
+:hello
+48 65 6c 6c 6f 2c 20 47        # Hello, G
+4e 55 20 4d 65 73 21 0a        # NU Mes!\n
+:ELF_end

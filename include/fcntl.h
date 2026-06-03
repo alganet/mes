@@ -41,7 +41,11 @@
 #define O_TRUNC       0x200
 #define O_APPEND      0x400
 
-#ifdef __arm__
+/* arm, aarch64 (and the other asm-generic ABIs) use O_DIRECTORY 0x4000;
+   only x86/x86_64 use 0x10000.  Getting this wrong makes open(O_DIRECTORY)
+   silently succeed on a regular file, so opendir() fails to report
+   ENOTDIR (cf. lib/tests/dirent/90-readdir.c). */
+#if defined (__arm__) || defined (__aarch64__)
 #define O_DIRECTORY   0x4000
 #define O_TMPFILE   0x404000
 #else

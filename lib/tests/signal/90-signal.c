@@ -32,6 +32,16 @@ handler (int signum)
 #if __MESC__ && __x86_64__
   asm ("mov____%rdi,0x8(%rbp) !0x10");  // FIXME: AMDCC
 #endif
+#if __MESC__ && __aarch64__
+  // The kernel passes signum in x0, but mescc reads the first argument
+  // from the stack slot at [BP+16].  Stash x0 there before it is read.
+  asm ("SET_X16_FROM_X0");      // x16 = signum (save across the BP math)
+  asm ("SET_X0_FROM_BP");       // x0 = BP
+  asm ("ADD_X0_16");            // x0 = &arg0 = BP + 16
+  asm ("SET_X1_FROM_X0");       // x1 = &arg0
+  asm ("SET_X0_FROM_X16");      // x0 = signum
+  asm ("STR_X0_[X1]");          // arg0 = signum
+#endif
   eputs ("handle:");
   eputs (itoa (signum));
   eputs ("\n");

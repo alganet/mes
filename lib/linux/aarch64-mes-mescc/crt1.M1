@@ -41,7 +41,13 @@
 ;; after the callee's PUSH_LR/PUSH_BP they sit at [BP+16]/[+24]/[+32].
 ;; The same three pushed words serve both calls (neither callee pops
 ;; its args -- mescc's caller does, and here that caller is us).
-
+;;
+;; "<" pads to a 4-byte boundary: aarch64 fetches instructions aligned,
+;; and the linker may place _start right after an odd-length string
+;; literal (mescc emits compiled functions with this same align prefix,
+;; but hand-written _start would otherwise inherit whatever offset it
+;; lands on -> unaligned entry -> SIGILL on the first fetch).
+<
 :_start
 	INIT_SP                 ; x18 = kernel sp; BP base for the arg math
 	SET_BP_FROM_SP          ; x17 = kernel sp ([BP]=argc, [BP+8]=argv[0])

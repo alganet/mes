@@ -85,6 +85,8 @@ mes_environment (int argc, char **argv)
   arch = "riscv32";
 #elif __riscv_xlen == 64
   arch = "riscv64";
+#elif __aarch64__
+  arch = "aarch64";
 #else
 #error arch not supported
 #endif

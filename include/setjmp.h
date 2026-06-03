@@ -51,6 +51,12 @@ typedef struct
   long __lr;
   long __registers[14]; /* Note: Keep in sync with lib/riscv64-mes-gcc/setjmp.c */
 } __jmp_buf;
+#elif __aarch64__ && (__GNUC__ || __TINYC__)
+typedef struct
+{
+  long __registers[13]; /* x19-x28, x29, x30, sp.
+                           Note: Keep in sync with lib/aarch64-mes-gcc/setjmp.c */
+} __jmp_buf;
 #else
 typedef struct
 {

@@ -289,12 +289,14 @@ lib/tests/scaffold/17-compare-rotated.c
     fi
 
     if test $mes_cpu = aarch64; then
+        # 16-cast / 17-compare-* are the same int-width xfails x86_64 carries
+        # under mescc (the frontend loads sub-register-width rvalues at full
+        # width); not aarch64-specific.  90-signal now passes via the aarch64
+        # asm shim in the test itself (mirroring the x86_64 shim).
         xfail_tests="$xfail_tests
 lib/tests/scaffold/16-cast.c
 lib/tests/scaffold/17-compare-unsigned-le.c
 lib/tests/scaffold/17-compare-rotated.c
-lib/tests/dirent/90-readdir.c
-lib/tests/signal/90-signal.c
 "
     fi
 fi
@@ -330,6 +332,23 @@ lib/tests/string/90-snprintf.c
     if test $mes_cpu = riscv64; then
         xfail_tests="$xfail_tests
 lib/tests/scaffold/70-extern.c
+"
+    fi
+
+    if test $mes_cpu = aarch64; then
+        # GCC marshals varargs through the aarch64 AAPCS save areas, which
+        # mes' hand-rolled <stdarg.h>/printf family do not implement; plus
+        # the same 70-extern / 90-execlp limitations the other gcc targets
+        # xfail.
+        xfail_tests="$xfail_tests
+lib/tests/scaffold/70-stdarg.c
+lib/tests/stdio/70-printf-hello.c
+lib/tests/stdio/70-printf-simple.c
+lib/tests/stdio/70-printf.c
+lib/tests/scaffold/70-extern.c
+lib/tests/stdio/80-sscanf.c
+lib/tests/posix/90-execlp.c
+lib/tests/string/90-snprintf.c
 "
     fi
 fi
